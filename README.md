@@ -4,6 +4,10 @@
 
 In this project, an **evolutionary algorithm** was implemented in Python in order to evolve the current configuration of the constituency boundaries in Ireland towards a new configuration which better satisfied the criteria specified in the Irish Constitution. The configurations were generated randomly by switching boundary electoral divisions from one constituency to another, and their adherence to the specified criteria was evaluated using a reward function to determine the optimal configuration. The Pandas library was used for data analysis, while the GeoPandas library was used to apply geometric methods such as intersections and differences to spatial data.
 
+<p align="center">
+  <img src="images/current_configuration.png"/>
+</p>
+
 ## Background
 
 On 9 February 2023, a new state body called the Electoral Commission was established to oversee elections in Ireland.[^1] One of the key roles of the Electoral Commission is reviewing the the Dáil Éireann constituencies, and making a report and recommendations in relation to possible changes to constituency boundaries.[^2] In making these recommendations, the Commission is required to observe the following provisions of the Constitution:
