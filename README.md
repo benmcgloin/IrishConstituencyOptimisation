@@ -30,8 +30,6 @@ In addition to these requirements, the Commission must have regard to the follow
 
 6. subject to the above matters, the Commission shall endeavour to maintain **continuity** in relation to the arrangement of constituencies.
 
-*The reference in (3) above to county boundaries is deemed not to include a reference to the boundary of a city or any boundary between any two of the counties of Dún Laoghaire-Rathdown, Fingal and South Dublin.*
-
 Ireland is divided up into 3,440 electoral divisions (EDs), which are currently split between 39 constituencies. The constituencies can be changed by transferring EDs from one constituency to another. The large number of constraints imposed by the Constitution mean that determining the optimal constituency boundaries is a challenging problem. In this project, numerical methods were implemented in order to find a solution which better satisfied the requirements and recommendations set out above.
 
 [^1]: [Irish Government Press Release](https://www.gov.ie/en/press-release/fd25a-an-coimisiun-toghchain-the-electoral-commission-is-formally-established-on-a-statutory-footing/)
