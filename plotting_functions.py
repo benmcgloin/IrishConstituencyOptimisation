@@ -92,6 +92,8 @@ color_dict = {con:color for con, color in zip(cons, palette)}
 
 palette_dublin = palette[9:20]
 
+plt.rcParams['figure.dpi'] = 300
+
 #%%
 def create_proxy(label):
     '''
@@ -723,7 +725,7 @@ def make_full_plot(df, save=True):
         time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         
         fig.savefig(f'./images/full_plot_{time}.png', 
-                    dpi=300,
+                    dpi=500,
                     bbox_inches='tight',
                     transparent=True, 
                     pad_inches=0.1
