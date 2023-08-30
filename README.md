@@ -10,7 +10,7 @@ The algorithm was observed to be successful at only producing configurations wit
 <p align="center">
   <img src="images/current_configuration_numbered.png"/>
 </p>
-<figcaption>The current configuration of the 39 Irish constituencies.</figcaption>
+<figcaption><em>The current configuration of the 39 Irish constituencies.</em></figcaption>
 </figure>
 
 ## Background
