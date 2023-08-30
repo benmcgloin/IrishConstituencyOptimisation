@@ -12,15 +12,17 @@ import numpy as np
 import networkx as nx # For contiguity check
 from numba import jit # Use numba for faster computation
 
+from data_analysis import ser
+
 #%% Files
 
-c2c = pd.read_csv('./data/cons.csv')
+c2c = pd.read_csv('./data/ConstituencyCountyLink.csv')
 
 #%% Constituency
 
 def constituency(df, c):
-    data = df[df['CON']==c] # All EDs in given CT
-    union = data.unary_union # Union of all EDs in given CT
+    data = df[df['CON']==c] # All EDs in given CON
+    union = data.unary_union # Union of all EDs in given CON
     return union
 
 #-------------------------------- CONTIGUITY ----------------------------------
@@ -32,12 +34,12 @@ def f_contiguity(df):
     Checks whether all constituencies in the state are contiguous.
     Returns 1 if so, 0 if not.
     '''
-    # Only check for changed CTs
+    # Only check for changed constituenciess
     changed_cons = list(np.unique(df[df['CHANGE']==1]['CON']))
-    # Neighbouring CTs of a flipped ED could also become discontiguous,
+    # Neighbouring CONs of a flipped ED could also become discontiguous,
     # so add them to changed_cons
     for i in list(df[df['CHANGE']>0].index):
-        for nc in df.loc[i, 'NBH_CONS']:
+        for nc in df.loc[i, 'NB_CONS']:
             if nc not in changed_cons:
                 changed_cons.append(nc)
     # Check contiguity of each changed constituency
@@ -51,11 +53,12 @@ def f_contiguity(df):
         # Form nested list with only neighbours in constituency c
         nbhs_in_c = [[n for n in nbh_sublist if n in ed_ids] 
                 for nbh_sublist in nbh_list]
-        if [] in nbhs_in_c: # If some ED in CT c has no neighbours in same CT
+        if [] in nbhs_in_c: # If some ED in CON c has no neighbours in same CON
             return 0
         # Create a dictionary of ED ID-neighbour pairs,
         # but only including neighbours in same constituency
-        nbh_dict = {ed_id: nbh for ed_id, nbh in zip(list(d['ED_ID']), nbhs_in_c)}
+        nbh_dict = {ed_id: nbh for ed_id, nbh in
+                    zip(list(d['ED_ID']), nbhs_in_c)}
         # Create a graph representing constituency c
         g = nx.Graph(nbh_dict)
         # Check whether the graph is connected, i.e. whether c is contiguous
@@ -111,6 +114,9 @@ def f_compactness(df, a=0.3):
 
 @jit(nopython=True)
 def f_exp(x, y, a, b):
+    '''
+    Exponential decay function.
+    '''
     return np.exp(-a*x-b*y)
 
 #------------------------------ COUNTY BOUNDARIES -----------------------------
@@ -124,7 +130,9 @@ def f_county_boundary(df, c2c=c2c, a=1e-10, b=1e-4):
     num_ed = 0
     num_ppl = 0
     for i in range(len(df)):
-        if df.loc[i,'COUNTY'] not in c2c[c2c['CON']==df.loc[i,'CON']]['HOME_COUNTY'].to_list():
+        con = df.loc[i,'CON']
+        if df.loc[i,'COUNTY'] not in \
+            c2c[c2c['CON']==con]['HOME_COUNTY'].item().split(','):
             num_ed += 1
             num_ppl += df.loc[i,'POPULATION']
     return f_exp(num_ppl, num_ed, a, b)
@@ -144,20 +152,10 @@ def f_continuity(df, a=0.0001, b=0.01):
 
 #-------------------------------------- SER -----------------------------------
 
-#%% SER
-
-def ser(df, c, national_ratio=29800):
-    '''
-    Returns SER of constituency c.
-    '''
-    data = df[df['CON']==c]
-    pop = data['POPULATION'].sum()
-    return pop/national_ratio
-
 #%% 'Bump' Function
 
 @jit(nopython=True)
-def f(s, d=0.005):
+def f(s, d=0.03):
     '''
     Bump function for each constituency.
     '''
@@ -184,7 +182,7 @@ def f_ser(df, a=3, national_ratio=29800):
 
 #%% Reward
 
-def reward(df, a_ser=1, a_cb=1e-10, b_cb=1e-4, a_cont=1e-3, b_cont=0.01,
+def reward(df, a_ser=3, a_cb=1e-10, b_cb=1e-4, a_cont=1e-3, b_cont=0.01,
            nr=29800):
     '''
     Reward function for dataframe df.

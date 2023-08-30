@@ -17,7 +17,7 @@ import random
 # Import reward function, which will first get rid of any non-contiguous 
 # solutions, and then rank a particular state according to:
 #   1. SER
-#   2. Respect of county boundaries
+#   2. Respect for county boundaries
 #   3. Continuity over time
 #   4. Compactness (convex hull) (not currently implemented)
 from reward_function import reward
@@ -25,49 +25,36 @@ from reward_function import reward
 # =============================================================================
 #                           FUNCTION DEFINITIONS
 # =============================================================================
-  
-#%% Get Indices
-  
-def get_indices(ed_ids, df):
-    '''
-    Takes in an array of ED IDs and returns an array 
-    of corresponding row indices.
-    '''
-    indices = []
-    for n in ed_ids:
-        if list(df.loc[df['ED_ID']==n].index) != []:
-            indices.append(list(df.loc[df['ED_ID']==n].index)[0])
-    return np.array(indices)
 
 #%% Flip
 
 def flip(df_orig):
     '''
-    Randomly swaps the CT of a boundary ED.
+    Randomly swaps the CON of a boundary ED.
     '''
     # Make copy of input dataframe
     df = df_orig.copy()
     
     # Filter the dataframe to contain only boundary EDs 
-    # which have not previously changed
-    data = df[(df['BOUNDARY']!=0)&(df['CHANGE']<1)].copy()
+    # which have not previously changed, and have non-zero population
+    pool = df[(df['BOUNDARY']!=0)&(df['CHANGE']<1)&(df['POPULATION']>0)]
     
     # Randomly choose one of the filtered EDs
-    i = int(random.choice(data.index.to_list()))
-    # Get pre-flip CT of chosen ED
+    i = int(random.choice(pool.index.to_list()))
+    # Get pre-flip CON of chosen ED
     old_con = df.at[i,'CON']
-    # Choose random neighbouring CT of chosen ED
-    new_con = random.choice(df.at[i,'NBH_CONS'])
-    # Update the CT of of the chosen ED; this is the 'flip'
+    # Choose random neighbouring CON of chosen ED
+    new_con = random.choice(df.at[i,'NB_CONS'])
+    # Update the CON of of the chosen ED; this is the 'flip'
     df.at[i,'CON'] = new_con
     # Update CHANGE to record that this ED has changed
     if df.at[i,'CHANGE'] == 1:
         df.at[i,'CHANGE'] = 2
     else:
         df.at[i,'CHANGE'] = 1
-    # Ensure no ED has its own CT as a neighbour
-    i0 = np.where(df.at[i,'NBH_CONS']==new_con)
-    df.at[i,'NBH_CONS'] = np.delete(df.at[i,'NBH_CONS'],i0)
+    # Ensure no ED has its own CON as a neighbour
+    i0 = np.where(df.at[i,'NB_CONS']==new_con)
+    df.at[i,'NB_CONS'] = np.delete(df.at[i,'NB_CONS'],i0)
     
     # Get an array of indices of neighbouring EDs
     nbh_ed_ids = df.at[i,'NEIGHBOURS']
@@ -76,10 +63,10 @@ def flip(df_orig):
         nbh_indices.append(df.loc[df['ED_ID']==n].index[0])
         
     # For each neighbouring ED y, if new_con is not listed in its neighbouring
-    # CTs, then append it to the list
+    # CONs, then append it to the list
     for y in nbh_indices:
-        if new_con not in list(df.at[y,'NBH_CONS']):
-            df.at[y,'NBH_CONS'] = np.append(df.at[y,'NBH_CONS'], new_con)
+        if new_con not in list(df.at[y,'NB_CONS']):
+            df.at[y,'NB_CONS'] = np.append(df.at[y,'NB_CONS'], new_con)
             
         # Neighbouring EDs of y
         nbh_ed_ids_y = df.at[y,'NEIGHBOURS']
@@ -93,22 +80,18 @@ def flip(df_orig):
             if df.at[z,'CON'] == old_con:
                 count += 1
         # If no neighbours of y in old_con, remove old_con from the list of
-        # neighbouring CTs of y
+        # neighbouring CONs of y
         if count == 0:
-            i1 = np.where(df.at[y,'NBH_CONS']==old_con)
-            df.at[y,'NBH_CONS'] = np.delete(df.at[y, 'NBH_CONS'], i1)
-            # If y has no neighbouring CTs, then it is
-            # not a boundary ED
-            #if df.at[y,'NBH_CONS'].size == 0:
-                #df.at[y,'BOUNDARY'] = 0
-                
+            i1 = np.where(df.at[y,'NB_CONS']==old_con)
+            df.at[y,'NB_CONS'] = np.delete(df.at[y, 'NB_CONS'], i1)
+
+    # If an ED has no neighbouting EDs, then it is not a boundary ED
     for j in range(len(df)):
-        if df.at[j,'NBH_CONS'].size == 0:
+        if df.at[j,'NB_CONS'].size == 0:
             df.at[j,'BOUNDARY'] = 0
-# =============================================================================
-#         if df.at[y,'BOUNDARY'] == 0:
-#             df.at[y,'BOUNDARY'] = 2
-# =============================================================================
+        else:
+            df.at[j,'BOUNDARY'] = 1
+
     return df
 
 #%% Sort Array
@@ -207,7 +190,6 @@ def evolve(df_orig, flips=10, kids=25, keep=3):
                 
     final_states = list(map(list, zip(*global_best)))[0]
     final_rewards = list(map(list, zip(*global_best)))[1]
-    optimal_state = final_states[0]
-    optimal_reward = final_rewards[0]
     
-    return optimal_state, optimal_reward
+    # Return three best states and corresponding rewards
+    return final_states[0:3], final_rewards[0:3]

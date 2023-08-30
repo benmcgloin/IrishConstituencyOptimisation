@@ -12,60 +12,61 @@ Created on Sun May 28 11:10:27 2023
 
 #%% Imports
 
-#import numpy as np
 import geopandas as gpd
 
 # Import evolutionary algorithm
 from evolutionary_algorithm import evolve
 
 # Import additional functions for plotting
-from plotting_functions import make_ser_table, make_ser_chart, \
-    make_plot, make_county_boundary_plot
+from plotting_functions import make_ser_and_vna_table, make_chart, \
+    make_plot, make_county_boundary_plot, make_full_plot, make_double_chart
 
 # Import additional functions for data analysis
-from data_analysis import find_full_state, convert_data, remove_islands, \
-    remove_dublin
+from data_analysis import find_full_state, convert_data, remove_islands
 
 #%% Files
 
 # Read in data
-d0 = gpd.read_feather('./data/ed_and_ct_data.feather')
+d0 = gpd.read_feather('./data/IrishElectoralDivisions.feather')
+# d0 = gpd.read_feather('./data/IrishElectoralDivisionsWithoutDublin.feather')
+# Uncomment to use dataset with Dublin removed
 
 # Convert data to appropriate types
 d0 = convert_data(d0)
 
-#%% Copy
+#%% Initialisation
 
 # Make a copy of the dataframe
 d = d0.copy()
-# Re-run this cell to re-initialise the data
 
-#%% Remove Islands
-
+# Remove Islands
 d = remove_islands(d)
 
-#%% Remove Dublin
-
-# Remove Dublin from the dataset, if desired
-d_no_dub = remove_dublin(d)
+# Re-run this cell to re-initialise the data
     
 #%% Parameters
 
 flips = 5 # Number of ED flips per configuration
 kids = 10 # Number of child states per generation
-keep = 3 # Number of child states to retain per generation
+keep = 4 # Number of child states to retain per generation
+# Number of culls per generation = kids - keep
 
 #%% Run
 
-# Run the evolutionary algorithm
-optimal_state, optimal_reward = evolve(d, flips, kids, keep)
+# Run the evolutionary algorithm to get three best states
+optimal_states, optimal_rewards = evolve(d, flips, kids, keep)
+optimal_state = optimal_states[0] # Get overall best state
 
 #%% Full State
 
 # Run find_full_state to add islands back into dataset (for plotting)
 # Set add_dublin=True if Dublin was not included in the evolution
-original_data_full = find_full_state(d, add_dublin=False)
+original_data_full = find_full_state(d0, add_dublin=False)
 optimal_data_full = find_full_state(optimal_state, add_dublin=False)
+
+#%% Full Numbered Plot
+
+make_full_plot(original_data_full)
 
 #%% Plots
 
@@ -73,9 +74,18 @@ make_plot(
     original_data_full, 
     'original_state'
     )
+
 make_plot(
     optimal_data_full, 
     f'optimal_state_flips={flips}_kids={kids}_keep={keep}'
+    )
+
+#%% Plot with Changes Highlighted
+
+make_plot(
+    optimal_data_full, 
+    f'optimal_state_flips={flips}_kids={kids}_keep={keep}',
+    highlight_changes=True
     )
 
 #%% County Boundary Plots
@@ -93,24 +103,45 @@ make_county_boundary_plot(
 #%% SER Chart
 
 # Bar chart comparing SERs of original and optimal state
-make_ser_chart(
+make_chart(
     original_data_full, 
     optimal_data_full, 
-    f'SER_w_dub_{flips}_{kids}_{keep}'
+    f'flips={flips}_kids={kids}_keep={keep}',
+    save_tex=True
     )
 
-#%% SER Tables
+#%% VNA Chart
 
-make_ser_table(
+# Bar chart comparing VNAs of original and optimal state
+make_chart(
+    original_data_full,
+    optimal_data_full,
+    f'flips={flips}_kids={kids}_keep={keep}',
+    metric='VNA',
+    save_tex=True
+    )
+
+#%% Double Chart Showing SER and VNA
+
+make_double_chart(
+    original_data_full, 
+    optimal_data_full,
+    save_tex=True
+    )
+
+#%% SER and VNA Tables
+
+make_ser_and_vna_table(
     original_data_full, 
     'original_state'
     )
-make_ser_table(
+make_ser_and_vna_table(
     optimal_data_full, 
-    f'optimal_state_SER_{flips}_{kids}_{keep}'
+    f'optimal_state_SER_flips={flips}_kids={kids}_keep={keep}'
     )
 
 #%% Save Data
 
 # Probably only bother with this if the optimal state is really good
-optimal_data_full.to_feather(f'./data/optimal_data_w_dub_7_{flips}_{kids}_{keep}.feather')
+optimal_data_full.to_feather(
+    f'./data/optimal_data_good_flips={flips}_kids={kids}_keep={keep}.feather')

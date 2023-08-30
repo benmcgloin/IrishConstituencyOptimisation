@@ -1,16 +1,21 @@
-# Multi-Objective Optimisation Applied to the Electoral Division Problem in Ireland
+# Multi-Objective Optimisation Applied to Electoral Redistricting in Ireland
 
 ## Overview
 
-In this project, an **evolutionary algorithm** was implemented in Python in order to evolve the current configuration of the constituency boundaries in Ireland towards a new configuration which better satisfied the criteria specified in the Irish Constitution. The configurations were generated randomly by switching boundary electoral divisions from one constituency to another, and their adherence to the specified criteria was evaluated using a reward function to determine the optimal configuration. The Pandas library was used for data analysis, while the GeoPandas library was used to apply geometric methods such as intersections and differences to spatial data.
+In this project, an **evolutionary algorithm** was implemented in Python in order to evolve the current configuration of the constituency boundaries in Ireland towards a new configuration which better satisfied the criteria specified in the Irish Constitution. The configurations were generated randomly by switching boundary electoral divisions from one constituency to another, and their adherence to the specified criteria was evaluated using a reward function to determine the optimal configuration. The `pandas` library was used for data analysis, while the `geopandas` library was used to apply geometric methods such as intersections and differences to spatial data.
 
+The algorithm was observed to be successful at only producing configurations with contiguous constituencies, and at producing constituencies with Seat Equivalent Representation values that were usually closer to integers than those of the constituencies in the current configuration. This meant that these altered constituencies could be more fairly represented by an actual number of elected representatives.
+
+<figure>
 <p align="center">
-  <img src="images/current_configuration.png"/>
+  <img src="images/current_configuration_numbered.png"/>
 </p>
+<figcaption>The current configuration of the 39 Irish constituencies.</figcaption>
+</figure>
 
 ## Background
 
-On 9 February 2023, a new state body called the Electoral Commission was established to oversee elections in Ireland.[^1] One of the key roles of the Electoral Commission is reviewing the the Dáil Éireann constituencies, and making a report and recommendations in relation to possible changes to constituency boundaries.[^2] In making these recommendations, the Commission is required to observe the following provisions of the Constitution:
+On 9 February 2023, a new state body called the [Electoral Commission](https://www.electoralcommission.ie/constituency-reviews/) was [established](https://www.gov.ie/en/press-release/fd25a-an-coimisiun-toghchain-the-electoral-commission-is-formally-established-on-a-statutory-footing/) to oversee elections in Ireland. One of the key roles of the Electoral Commission is reviewing the the Dáil Éireann constituencies, and making a report and recommendations in relation to possible changes to constituency boundaries. In making these recommendations, the Commission is required to observe the following provisions of the [Irish Constitution](http://www.irishstatutebook.ie/en/constitution/index.html):
 
 - Article 16.2.2˚ of the Constitution provides that:
 
@@ -35,6 +40,3 @@ In addition to these requirements, the Commission must have regard to the follow
 6. subject to the above matters, the Commission shall endeavour to maintain **continuity** in relation to the arrangement of constituencies.
 
 Ireland is divided up into 3,440 electoral divisions (EDs), which are currently split between 39 constituencies. The constituencies can be changed by transferring EDs from one constituency to another. The large number of constraints imposed by the Constitution mean that determining the optimal constituency boundaries is a challenging problem. In this project, numerical methods were implemented in order to find a solution which better satisfied the requirements and recommendations set out above.
-
-[^1]: [Irish Government Press Release](https://www.gov.ie/en/press-release/fd25a-an-coimisiun-toghchain-the-electoral-commission-is-formally-established-on-a-statutory-footing/)
-[^2]: [Electoral Commission: Constituency Reviews](https://www.electoralcommission.ie/constituency-reviews/)
