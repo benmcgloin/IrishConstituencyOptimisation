@@ -2,6 +2,8 @@
 
 A project by Eliza Somerville, Alexander Farren, Ben McGloin and Mikey Whelan.
 
+*For full details, see our <a href="https://elizasomerville.github.io/Redistricting_Ireland_Report.pdf">report</a>.*
+
 ## Overview
 
 In 2023, the [Electoral Commission](https://www.electoralcommission.ie/constituency-reviews/) of Ireland was tasked with preparing a set of recommendations on possible changes to the constituency boundaries of Ireland. In doing so, they were required satisfy numerous criteria stipulated by the Irish Constitution, pertaining to features such as population per representative, contiguity of constituencies, and temporal continuity. The large number of objectives involved in the design of the constituency boundaries means that this is a prime use case for **multi-objective optimisation**.
