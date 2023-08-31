@@ -128,7 +128,7 @@ def find_full_state(df, add_dublin=False):
 
 def ser(df, c, national_ratio=29800):
     '''
-    Returns SER of constituency c.
+    Returns SER (Seat Equivalent Representation) of constituency c.
     '''
     data = df[df['CON']==c]
     pop = data['POPULATION'].sum()
@@ -138,7 +138,7 @@ def ser(df, c, national_ratio=29800):
 
 def vna(df, c, use_current_seats=False, national_ratio=29800):
     '''
-    Returns VNA of constituency c.
+    Returns VNA (Variance from National Average) of constituency c.
     '''
     ser_val = ser(df, c)
     if use_current_seats:

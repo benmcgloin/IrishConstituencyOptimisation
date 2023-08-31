@@ -21,6 +21,9 @@ c2c = pd.read_csv('./data/ConstituencyCountyLink.csv')
 #%% Constituency
 
 def constituency(df, c):
+    '''
+    Finds union of all EDs in a constituency.
+    '''
     data = df[df['CON']==c] # All EDs in given CON
     union = data.unary_union # Union of all EDs in given CON
     return union

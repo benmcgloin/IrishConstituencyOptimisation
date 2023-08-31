@@ -46,7 +46,7 @@ d = remove_islands(d)
     
 #%% Parameters
 
-flips = 5 # Number of ED flips per configuration
+flips = 5 # Number of ED flips per child state
 kids = 10 # Number of child states per generation
 keep = 4 # Number of child states to retain per generation
 # Number of culls per generation = kids - keep
