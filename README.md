@@ -2,9 +2,11 @@
 
 ## Overview
 
+In 2023, the [Electoral Commission](https://www.electoralcommission.ie/constituency-reviews/) of Ireland was tasked with preparing a set of recommendations on possible changes to the constituency boundaries of Ireland. In doing so, they were required satisfy numerous criteria stipulated by the Irish Constitution, pertaining to features such as population per representative, contiguity of constituencies, and temporal continuity. The large number of objectives involved in the design of the constituency boundaries means that this is a prime use case for **multi-objective optimisation**.
+
 In this project, an **evolutionary algorithm** was implemented in Python in order to evolve the current configuration of the constituency boundaries in Ireland towards a new configuration which better satisfied the criteria specified in the Irish Constitution. The configurations were generated randomly by switching boundary electoral divisions from one constituency to another, and their adherence to the specified criteria was evaluated using a reward function to determine the optimal configuration. The `pandas` library was used for data analysis, while the `geopandas` library was used to apply geometric methods such as intersections and differences to spatial data.
 
-The algorithm was observed to be successful at only producing configurations with contiguous constituencies, and at producing constituencies with Seat Equivalent Representation values that were usually closer to integers than those of the constituencies in the current configuration. This meant that these altered constituencies could be more fairly represented by an actual number of elected representatives.
+The algorithm was observed to be successful at only producing configurations with contiguous constituencies, and at producing constituencies with Seat Equivalent Representation values that were usually closer to integers than those of the constituencies in the current configuration. This meant that these altered constituencies could be more fairly represented by an actual number of elected representatives, which was the desired outcome.
 
 <figure>
 <p align="center">
@@ -40,3 +42,5 @@ In addition to these requirements, the Commission must have regard to the follow
 6. subject to the above matters, the Commission shall endeavour to maintain **continuity** in relation to the arrangement of constituencies.
 
 Ireland is divided up into 3,440 electoral divisions (EDs), which are currently split between 39 constituencies. The constituencies can be changed by transferring EDs from one constituency to another. The large number of constraints imposed by the Constitution mean that determining the optimal constituency boundaries is a challenging problem. In this project, numerical methods were implemented in order to find a solution which better satisfied the requirements and recommendations set out above.
+
+Further details are provided in our report.
