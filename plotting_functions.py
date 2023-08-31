@@ -448,7 +448,7 @@ def make_double_chart(df1, df2, name='chart', dpi=300, x=15, y=20,
             
 def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
               filetype='png', numbered=False, save=True, ax=None,
-              outline_dublin=False, highlight_changes=False):
+              outline_dublin=False, highlight_changes=False, use_cons=False):
     '''
     Creates a plot of EDs coloured according to CON.
     If save=True, then saves a PNG/PDF depending on filetype.
@@ -458,6 +458,11 @@ def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
     if ax == None:
         # If not plotting on an existing axis, then create a new figure
         fig, ax = plt.subplots(1, 1, figsize=(x,y))
+        fontsize = 10
+        markerscale = 4
+    else:
+        fontsize = 3
+        markerscale = 2
     
     df = df_orig.copy()
     
@@ -476,6 +481,18 @@ def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
         changed.plot(color=changed['COLOR'], ax=ax)
         
         legend=False
+        
+    elif use_cons:
+        con_outlines['CON'] = con_outlines['CON'].str.title()
+        con_outlines['geometry'] = con_outlines['geometry'].simplify(15)
+        con_outlines.plot(
+            column='CON', 
+            cmap=ListedColormap(palette), 
+            ax=ax, 
+            categorical=True, 
+            legend=legend
+            )
+        
     else:
         # Plot EDs coloured according to CON
         df.plot(
@@ -488,18 +505,6 @@ def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
         
     # Remove axes and tick labels
     ax.set_axis_off()
-    ax.tick_params(
-        axis='both',        # Affect both the x and y axes
-        which='both',       # Get rid of both major and minor ticks
-        top=False,          # Get rid of ticks on top/bottom/left/right
-        bottom=False,
-        left=False,
-        right=False,
-        labeltop=False,     # Get rid of labels on top/bottom/left/right
-        labelbottom=False,
-        labelleft=False,
-        labelright=False
-        )
     
     if numbered:
         cons = np.unique(df[df['COUNTY']!='DUBLIN']['CON'])
@@ -514,14 +519,14 @@ def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
                 text=nums[c], 
                 xy=pt, 
                 ha='center', 
-                fontsize=3,
+                fontsize=fontsize,
                 bbox={'boxstyle':'circle','color':'white'}
                 )
         
         if save:
             labels = [nums[c] for c in cons]
             proxies = [create_proxy(num) for num in labels]
-            ax.legend(proxies, cons, numpoints=1, markerscale=2)
+            ax.legend(proxies, cons, numpoints=1, markerscale=markerscale)
             
     if outline_dublin:
         dublin_outline.plot(
@@ -553,11 +558,13 @@ def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
                 transparent=True, 
                 pad_inches=0
                 )
+    
         
-#%% Plot
+#%% Dublin Plot
 
 def make_dublin_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
-              filetype='png', numbered=False, save=True, ax=None):
+              filetype='png', numbered=False, save=True, ax=None,
+              use_cons=False):
     '''
     Creates a plot of EDs coloured according to CON.
     Saves a PNG by default, otherwise PDF.
@@ -565,35 +572,40 @@ def make_dublin_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
     if ax == None:
         # If not plotting on an existing axis, then create a new figure
         fig, ax = plt.subplots(1, 1, figsize=(x,y))
+        fontsize = 10
+        markerscale = 4
+    else:
+        fontsize = 3
+        markerscale = 2
     
     df = df_orig.copy()
     df['CON'] = df['CON'].str.title()
     
     dub = df[df['COUNTY']=='DUBLIN']
     
-    # Plot EDs coloured according to CON
-    dub.plot(
-        column='CON', 
-        cmap=ListedColormap(palette_dublin), 
-        ax=ax, 
-        categorical=True, 
-        legend=legend
-        )
+    if use_cons:
+        dub_cons = con_outlines[con_outlines['COUNTY']=='DUBLIN'].copy()
+        dub_cons['CON'] = dub_cons['CON'].str.title()
+        dub_cons['geometry'] = dub_cons['geometry'].simplify(15)
+        dub_cons.plot(
+            column='CON', 
+            cmap=ListedColormap(palette_dublin), 
+            ax=ax, 
+            categorical=True, 
+            legend=legend
+            )
+    else:
+        # Plot EDs coloured according to CON
+        dub.plot(
+            column='CON', 
+            cmap=ListedColormap(palette_dublin), 
+            ax=ax, 
+            categorical=True, 
+            legend=legend
+            )
         
-    # Remove axes and tick labels
+    # Remove axes
     ax.set_axis_off()
-    ax.tick_params(
-        axis='both',        # Affect both the x and y axes
-        which='both',       # Get rid of both major and minor ticks
-        top=False,          # Get rid of ticks on top/bottom/left/right
-        bottom=False,
-        left=False,
-        right=False,
-        labeltop=False,     # Get rid of labels on top/bottom/left/right
-        labelbottom=False,
-        labelleft=False,
-        labelright=False
-        )
     
     if numbered:
         cons = np.unique(dub['CON'])
@@ -608,14 +620,14 @@ def make_dublin_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
                 text=nums[c], 
                 xy=pt, 
                 ha='center', 
-                fontsize=3,
+                fontsize=fontsize,
                 bbox={'boxstyle':'circle','color':'white'}
                 )
         
         if save:
             labels = [nums[c] for c in cons]
             proxies = [create_proxy(num) for num in labels]
-            ax.legend(proxies, cons, numpoints=1, markerscale=2)
+            ax.legend(proxies, cons, numpoints=1, markerscale=markerscale)
         
     if legend:
         leg = ax.get_legend()
@@ -679,7 +691,7 @@ def make_legend(df_orig, ax):
     leg.get_frame().set_linewidth(0.2)
     
 #%%
-def make_full_plot(df, save=True):
+def make_full_plot(df, save=True, use_cons=True):
     '''
     Make a numbered plot showing all Irish constituencies,
     including a zoomed view of Dublin.
@@ -703,7 +715,8 @@ def make_full_plot(df, save=True):
         numbered=True,
         save=False,
         ax=axs['A'],
-        outline_dublin=True
+        outline_dublin=True,
+        use_cons=use_cons
         )
     # Plot B
     make_dublin_plot(
@@ -711,7 +724,8 @@ def make_full_plot(df, save=True):
         legend=False,
         numbered=True, 
         save=False,
-        ax=axs['B']
+        ax=axs['B'],
+        use_cons=use_cons
         )
     # Plot C
     make_legend(
@@ -724,7 +738,7 @@ def make_full_plot(df, save=True):
         # Get current time
         time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         
-        fig.savefig(f'./images/full_plot_{time}.png', 
+        fig.savefig(f'./images/full_plot_{time}.svg', 
                     dpi=500,
                     bbox_inches='tight',
                     transparent=True, 
@@ -772,21 +786,9 @@ def make_county_boundary_plot(df_orig, name='plot', dpi=500, x=11, y=11,
     leg = ax.get_legend()
     leg.set_bbox_to_anchor((0.9, 0.5, 0.5, 0.5))
     
-    # Remove axes and tick labels
+    # Remove axes
     ax.set_axis_off()
-    ax.tick_params(
-        axis='both',        # Affect both the x and y axes
-        which='both',       # Get rid of both major and minor ticks
-        top=False,          # Get rid of ticks on top/bottom/left/right
-        bottom=False,
-        left=False,
-        right=False,
-        labeltop=False,     # Get rid of labels on top/bottom/left/right
-        labelbottom=False,
-        labelleft=False,
-        labelright=False
-        )
-    
+
     # Get current time
     time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     
@@ -803,7 +805,7 @@ def make_county_boundary_plot(df_orig, name='plot', dpi=500, x=11, y=11,
             bbox_inches='tight',
             transparent=True, 
             pad_inches=0
-            )
+            )    
     else:
         print('Only filetypes PNG and PDF currently supported.')
     
