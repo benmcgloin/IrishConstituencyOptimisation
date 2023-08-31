@@ -57,26 +57,26 @@ def flip(df_orig):
     df.at[i,'NB_CONS'] = np.delete(df.at[i,'NB_CONS'],i0)
     
     # Get an array of indices of neighbouring EDs
-    nbh_ed_ids = df.at[i,'NEIGHBOURS']
-    nbh_indices = []
-    for n in nbh_ed_ids:
-        nbh_indices.append(df.loc[df['ED_ID']==n].index[0])
+    nb_ed_ids = df.at[i,'NEIGHBOURS']
+    nb_indices = []
+    for n in nb_ed_ids:
+        nb_indices.append(df.loc[df['ED_ID']==n].index[0])
         
     # For each neighbouring ED y, if new_con is not listed in its neighbouring
     # CONs, then append it to the list
-    for y in nbh_indices:
+    for y in nb_indices:
         if new_con not in list(df.at[y,'NB_CONS']):
             df.at[y,'NB_CONS'] = np.append(df.at[y,'NB_CONS'], new_con)
             
         # Neighbouring EDs of y
-        nbh_ed_ids_y = df.at[y,'NEIGHBOURS']
-        nbh_indices_y = []
-        for n2 in nbh_ed_ids_y:
-            nbh_indices_y.append(df[df['ED_ID']==n2].index[0])
+        nb_ed_ids_y = df.at[y,'NEIGHBOURS']
+        nb_indices_y = []
+        for n2 in nb_ed_ids_y:
+            nb_indices_y.append(df[df['ED_ID']==n2].index[0])
             
         # Count number of neighbours of y which are in old_con
         count = 0
-        for z in nbh_indices_y:
+        for z in nb_indices_y:
             if df.at[z,'CON'] == old_con:
                 count += 1
         # If no neighbours of y in old_con, remove old_con from the list of
