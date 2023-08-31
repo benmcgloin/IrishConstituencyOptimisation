@@ -198,7 +198,11 @@ def make_ser_and_vna_table(df, name='table', dpi=300, save_tex=False,
     # Get current time
     time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     
-    fig.savefig(f'./images/{name}_{time}.png', dpi=dpi, bbox_inches='tight')
+    fig.savefig(
+        f'./images/{name}_{time}.png', 
+        dpi=dpi, 
+        bbox_inches='tight'
+        )
     
 #%% SER Chart
 
@@ -327,11 +331,11 @@ def make_chart(df1, df2, name='chart', dpi=300, x=15, y=11, filetype='png',
             pad_inches=0
             )
     else:
-        print('Only filetypes PNG and PDF currently supported.')
+        fig.savefig(f'./images/{name}_{time}.{filetype.strip()}')
         
 #%% SER Chart
 
-def make_double_chart(df1, df2, name='chart', dpi=300, x=15, y=20, 
+def make_double_chart(df1, df2, name='double_chart', dpi=300, x=15, y=20, 
                       filetype='png', save_tex=False,
                       use_current_seats_for_current=True):
     '''
@@ -442,8 +446,8 @@ def make_double_chart(df1, df2, name='chart', dpi=300, x=15, y=20,
             pad_inches=0
             )
     else:
-        print('Only filetypes PNG and PDF currently supported.')
-    
+        fig.savefig(f'./images/{name}_{time}.{filetype.strip()}')
+        
 #%% Plot
             
 def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
@@ -558,13 +562,15 @@ def make_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
                 transparent=True, 
                 pad_inches=0
                 )
+        else:
+            fig.savefig(f'./images/{name}_{time}.{filetype.strip()}')
     
         
 #%% Dublin Plot
 
-def make_dublin_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
-              filetype='png', numbered=False, save=True, ax=None,
-              use_cons=False):
+def make_dublin_plot(df_orig, name='dublin_plot', dpi=500, legend=True, 
+                     x=11, y=11, filetype='png', numbered=False, save=True, 
+                     ax=None, use_cons=False):
     '''
     Creates a plot of EDs coloured according to CON.
     Saves a PNG by default, otherwise PDF.
@@ -652,7 +658,7 @@ def make_dublin_plot(df_orig, name='plot', dpi=500, legend=True, x=11, y=11,
                 pad_inches=0
                 )
         else:
-            print('Only filetypes PNG and PDF currently supported.')
+            fig.savefig(f'./images/{name}_{time}.{filetype.strip()}')
             
 #%%
 def make_legend(df_orig, ax):
@@ -695,6 +701,8 @@ def make_full_plot(df, save=True, use_cons=True):
     '''
     Make a numbered plot showing all Irish constituencies,
     including a zoomed view of Dublin.
+    Use use_cons=True if plotting current configuration, as this eliminates
+    ED edge lines from antialiasing.
     '''
     # A = Full country plot
     # B = Zoomed view of Dublin
@@ -738,7 +746,7 @@ def make_full_plot(df, save=True, use_cons=True):
         # Get current time
         time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         
-        fig.savefig(f'./images/full_plot_{time}.svg', 
+        fig.savefig(f'./images/full_plot_{time}.png', 
                     dpi=500,
                     bbox_inches='tight',
                     transparent=True, 
@@ -807,5 +815,5 @@ def make_county_boundary_plot(df_orig, name='plot', dpi=500, x=11, y=11,
             pad_inches=0
             )    
     else:
-        print('Only filetypes PNG and PDF currently supported.')
+        fig.savefig(f'./images/{name}_{time}.{filetype.strip()}')
     
