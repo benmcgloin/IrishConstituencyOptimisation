@@ -120,7 +120,7 @@ the Constitution:
 
 ![The current configuration of constituencies, overlaid with county
 boundaries shown as grey
-lines.](images/current_configuration.png)
+lines.](images/current_configuration_county_boundaries)
 *Figure 2: The current configuration of constituencies, overlaid with county boundaries shown as grey lines.*
 
 #### Summary of Criteria
