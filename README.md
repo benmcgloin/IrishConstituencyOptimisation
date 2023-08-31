@@ -8,7 +8,7 @@ The algorithm was observed to be successful at only producing configurations wit
 
 <figure>
 <p align="center">
-  <img src="images/current_configuration_numbered.png"/>
+  <img src="images/current_configuration_numbered.svg" style="width:800px;height:800px;"/>
 </p>
 <figcaption><em>The current configuration of the 39 Irish constituencies.</em></figcaption>
 </figure>
