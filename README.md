@@ -43,4 +43,4 @@ In addition to these requirements, the Commission must have regard to the follow
 
 Ireland is divided up into 3,440 electoral divisions (EDs), which are currently split between 39 constituencies. The constituencies can be changed by transferring EDs from one constituency to another. The large number of constraints imposed by the Constitution mean that determining the optimal constituency boundaries is a challenging problem. In this project, numerical methods were implemented in order to find a solution which better satisfied the requirements and recommendations set out above.
 
-Further details are provided in our report.
+Further details are provided in our [report](Redistricting_Ireland_Report.pdf).
